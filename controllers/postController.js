@@ -5,7 +5,7 @@ const posts = [
     id: 69,
     title: "Title 1",
     content: "Hello Boys",
-    authorName: "Devashish",
+    authorName: "Devashish Chakraborty",
   },
   {
     id: 420,

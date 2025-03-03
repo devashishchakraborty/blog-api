@@ -10,8 +10,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(import.meta.dirname, "public")));
 
-app.use(routes.authRouter)
-app.use("/posts", authenticateJWT, routes.postsRouter);
+app.use(routes.authRouter);
+app.use("/posts", authenticateJWT, routes.postRouter);
 
 app.listen(port, () => {
   console.log(`Blog API listening on port ${port}`);

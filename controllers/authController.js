@@ -2,7 +2,8 @@ import { body, validationResult } from "express-validator";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+import passport from "../config/passport.js";
 
 const prisma = new PrismaClient();
 const validateSignUp = [
@@ -46,19 +47,16 @@ const userLogin = (req, res, next) => {
     if (!user) {
       return res.status(400).send({ err: { msg: info.message } });
     }
-    req.login(user, (err) => {
-      if (err) return res.status(400).send({ err });
-      const payload = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      };
-      const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "10m",
-      });
-      return res.send({ accessToken });
+    const payload = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: "500s",
     });
+    return res.send({ accessToken });
   })(req, res, next);
 };
 
