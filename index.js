@@ -13,6 +13,13 @@ app.use(express.static(path.join(import.meta.dirname, "public")));
 app.use(routes.authRouter);
 app.use("/posts", authenticateJWT, routes.postRouter);
 
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({
+    message: err.message || "Internal Server Error",
+  });
+});
+
 app.listen(port, () => {
   console.log(`Blog API listening on port ${port}`);
 });
