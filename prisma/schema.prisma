@@ -26,14 +26,14 @@ model Post {
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  text       String
-  author     User     @relation(fields: [author_id], references: [id])
-  author_id  Int
-  post       Post     @relation(fields: [post_id], references: [id])
-  post_id    Int
+  id           Int      @id @default(autoincrement())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  text         String
+  author_email String
+  author_name  String
+  post         Post     @relation(fields: [post_id], references: [id])
+  post_id      Int
 }
 
 model User {
@@ -42,7 +42,6 @@ model User {
   name     String
   password String
   posts    Post[]
-  comments Comment[]
   role     Role      @default(USER)
 }
 

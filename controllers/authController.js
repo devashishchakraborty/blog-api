@@ -53,10 +53,10 @@ const userLogin = (req, res, next) => {
       name: user.name,
       role: user.role,
     };
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "500s",
+    const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: "24h",
     });
-    return res.send({ accessToken });
+    return res.send({ token });
   })(req, res, next);
 };
 

@@ -19,6 +19,9 @@ const getPostById = asyncHandler(async (req, res) => {
       id: parseInt(postId),
       author_id: req.user.id,
     },
+    include: {
+      comments: true
+    }
   });
   if (!post) {
     res.status(404);
@@ -40,13 +43,13 @@ const createPost = asyncHandler(async (req, res) => {
 
 const updatePost = asyncHandler(async (req, res) => {
   const post = await prisma.post.update({
+    where: {
+      id: parseInt(req.params.postId),
+      author_id: req.user.id,
+    },
     data: {
       title: req.body.title,
       content: req.body.content,
-    },
-    where: {
-      id: parseInt(req.params.id),
-      author_id: req.user.id,
     },
   });
   res.send(post);
@@ -56,9 +59,9 @@ const deletePost = asyncHandler(async (req, res) => {
   await prisma.post.delete({
     where: {
       id: parseInt(req.params.id),
-      author_id: parseInt(req.user.id)
-    }
-  })
+      author_id: parseInt(req.user.id),
+    },
+  });
   res.sendStatus(200);
 });
 
