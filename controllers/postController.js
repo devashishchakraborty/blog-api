@@ -68,9 +68,9 @@ const deletePost = asyncHandler(async (req, res) => {
 const addComment = asyncHandler(async (req, res) => {
   const comment = await prisma.comment.create({
     data: {
-      author_name: req.body.fullname,
+      author_name: req.body.name,
       author_email: req.body.email,
-      text: req.body.commentText,
+      text: req.body.text,
       post_id: parseInt(req.params.postId)
     },
   });
