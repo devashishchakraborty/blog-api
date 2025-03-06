@@ -20,8 +20,8 @@ const getPostById = asyncHandler(async (req, res) => {
       author_id: req.user.id,
     },
     include: {
-      comments: true
-    }
+      comments: true,
+    },
   });
   if (!post) {
     res.status(404);
@@ -65,10 +65,23 @@ const deletePost = asyncHandler(async (req, res) => {
   res.sendStatus(200);
 });
 
+const addComment = asyncHandler(async (req, res) => {
+  const comment = await prisma.comment.create({
+    data: {
+      author_name: req.body.fullname,
+      author_email: req.body.email,
+      text: req.body.commentText,
+      post_id: parseInt(req.params.postId)
+    },
+  });
+  res.send(comment);
+});
+
 export default {
   getPosts,
   getPostById,
   createPost,
   updatePost,
   deletePost,
+  addComment
 };

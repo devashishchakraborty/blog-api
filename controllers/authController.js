@@ -53,9 +53,7 @@ const userLogin = (req, res, next) => {
       name: user.name,
       role: user.role,
     };
-    const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "24h",
-    });
+    const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
     return res.send({ token });
   })(req, res, next);
 };

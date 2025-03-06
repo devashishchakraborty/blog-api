@@ -6,6 +6,7 @@ const postRouter = Router();
 postRouter.get("/", postController.getPosts);
 postRouter.get("/:postId", postController.getPostById);
 postRouter.post("/", postController.createPost);
+postRouter.post("/:postId/comments", postController.addComment);
 postRouter.put("/:postId", postController.updatePost);
 postRouter.delete("/:postId", postController.deletePost);
 
