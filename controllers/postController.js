@@ -31,27 +31,36 @@ const getPostById = asyncHandler(async (req, res) => {
 });
 
 const createPost = asyncHandler(async (req, res) => {
+  const {title, content, published} = req.body;
   const post = await prisma.post.create({
     data: {
-      title: req.body.title,
-      content: req.body.content,
+      title: title,
+      content: content,
       author_id: req.user.id,
+      published: published || false,
     },
   });
   res.send(post);
 });
 
 const updatePost = asyncHandler(async (req, res) => {
+  const { title, content, published } = req.body;
+  const data = {};
+  if (title && content) {
+    data.title = title;
+    data.content = content;
+  }
+
+  if (published !== null) data.published = published;
+
   const post = await prisma.post.update({
     where: {
       id: parseInt(req.params.postId),
       author_id: req.user.id,
     },
-    data: {
-      title: req.body.title,
-      content: req.body.content,
-    },
+    data,
   });
+
   res.send(post);
 });
 
@@ -71,7 +80,7 @@ const addComment = asyncHandler(async (req, res) => {
       author_name: req.body.name,
       author_email: req.body.email,
       text: req.body.text,
-      post_id: parseInt(req.params.postId)
+      post_id: parseInt(req.params.postId),
     },
   });
   res.send(comment);
@@ -83,5 +92,5 @@ export default {
   createPost,
   updatePost,
   deletePost,
-  addComment
+  addComment,
 };

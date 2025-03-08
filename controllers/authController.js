@@ -11,15 +11,17 @@ const validateSignUp = [
     .toLowerCase()
     .trim()
     .custom(async (value) => {
-      const users = await prisma.user.findMany();
-      const emailIds = users.map((user) => user.email.toLowerCase());
-      if (emailIds.includes(value)) {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: value,
+        },
+      });
+      if (user) {
         throw new Error("Email already exists! Try a different one.");
       }
     }),
-  body("confirmPassword")
-    .custom((value, { req }) => value === req.body.password)
-    .withMessage("The passwords do not match"),
+    body("name")
+    .trim()
 ];
 
 const userSignUp = [
@@ -27,15 +29,11 @@ const userSignUp = [
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+      return res.status(409).send({ errors: errors.array() });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     await prisma.user.create({
-      data: {
-        name: req.body.name,
-        email: req.body.email,
-        password: hashedPassword,
-      },
+      data: { ...req.body, password: hashedPassword },
     });
     res.sendStatus(200);
   }),
@@ -45,7 +43,7 @@ const userLogin = (req, res, next) => {
   passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err) return res.status(400).send({ err });
     if (!user) {
-      return res.status(400).send({ err: { msg: info.message } });
+      return res.status(400).send({ err: info.message });
     }
     const payload = {
       id: user.id,
