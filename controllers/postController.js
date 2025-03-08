@@ -65,13 +65,13 @@ const updatePost = asyncHandler(async (req, res) => {
 });
 
 const deletePost = asyncHandler(async (req, res) => {
-  await prisma.post.delete({
+  const deletedPost = await prisma.post.delete({
     where: {
-      id: parseInt(req.params.id),
-      author_id: parseInt(req.user.id),
+      id: parseInt(req.params.postId),
+      author_id: req.user.id,
     },
   });
-  res.sendStatus(200);
+  res.send(deletedPost);
 });
 
 const addComment = asyncHandler(async (req, res) => {
