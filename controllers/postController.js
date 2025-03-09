@@ -86,6 +86,15 @@ const addComment = asyncHandler(async (req, res) => {
   res.send(comment);
 });
 
+const deleteComment = asyncHandler(async (req, res) => {
+  const comment = await prisma.comment.delete({
+    where: {
+      id: parseInt(req.params.commentId)
+    }
+  })
+  res.send(comment);
+})
+
 export default {
   getPosts,
   getPostById,
@@ -93,4 +102,5 @@ export default {
   updatePost,
   deletePost,
   addComment,
+  deleteComment,
 };
