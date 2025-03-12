@@ -4,42 +4,42 @@ import asyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 
 const getPosts = asyncHandler(async (req, res) => {
+  let condition = {};
+  if (req.user.role != "ADMIN") condition.author_id = req.user.id;
   const posts = await prisma.post.findMany({
-    where: {
-      author_id: req.user.id,
-    },
+    where: condition,
+    include: {
+      author: true
+    }
   });
   res.send(posts);
 });
 
 const getPostById = asyncHandler(async (req, res) => {
   const { postId } = req.params;
+  let condition = {};
+  if (req.user.role != "ADMIN") condition.author_id = req.user.id;
   const post = await prisma.post.findUnique({
     where: {
       id: parseInt(postId),
-      author_id: req.user.id,
+      ...condition,
     },
     include: {
       comments: true,
+      author: true,
     },
   });
   if (!post) {
-    res.status(404);
-    throw new Error("Post not found");
+    return res.sendStatus(404);
   }
   return res.send(post);
 });
 
 const createPost = asyncHandler(async (req, res) => {
-  const {title, content, published} = req.body;
-  const post = await prisma.post.create({
-    data: {
-      title: title,
-      content: content,
-      author_id: req.user.id,
-      published: published || false,
-    },
-  });
+  const { title, content, published } = req.body;
+  const data = { title, content, author_id: req.user.id };
+  if (published) data.published = true;
+  const post = await prisma.post.create({ data });
   res.send(post);
 });
 
@@ -65,12 +65,16 @@ const updatePost = asyncHandler(async (req, res) => {
 });
 
 const deletePost = asyncHandler(async (req, res) => {
+  let condition = {};
+  if (req.user.role != "ADMIN") condition.author_id = req.user.id;
+
   const deletedPost = await prisma.post.delete({
     where: {
       id: parseInt(req.params.postId),
-      author_id: req.user.id,
+      ...condition,
     },
   });
+  if (!deletedPost) return res.sendStatus(404);
   res.send(deletedPost);
 });
 
@@ -87,13 +91,25 @@ const addComment = asyncHandler(async (req, res) => {
 });
 
 const deleteComment = asyncHandler(async (req, res) => {
-  const comment = await prisma.comment.delete({
+  const comment = await prisma.comment.findUnique({
     where: {
-      id: parseInt(req.params.commentId)
-    }
-  })
-  res.send(comment);
-})
+      id: parseInt(req.params.commentId),
+    },
+    include: {
+      post: true,
+    },
+  });
+
+  if (req.user.role == "ADMIN" || comment.post.author_id == req.user.id) {
+    const comment = await prisma.comment.delete({
+      where: {
+        id: parseInt(req.params.commentId),
+      },
+    });
+    return res.send(comment);
+  }
+  res.sendStatus(403);
+});
 
 export default {
   getPosts,

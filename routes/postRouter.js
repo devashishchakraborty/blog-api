@@ -10,5 +10,5 @@ postRouter.put("/:postId", postController.updatePost);
 postRouter.delete("/:postId", postController.deletePost);
 
 postRouter.post("/:postId/comments", postController.addComment);
-postRouter.delete("/:postId/comments/:commentId", postController.deleteComment)
+postRouter.delete("/comments/:commentId", postController.deleteComment)
 export default postRouter;
