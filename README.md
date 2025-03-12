@@ -44,7 +44,7 @@ This repository contains the RESTful API for the Blog project, providing endpoin
 4. **Start the server**:
 
    ```bash
-   npm start
+   node --watch .
    ```
 
    The API will be accessible at `http://localhost:3000`.
