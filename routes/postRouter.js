@@ -5,9 +5,9 @@ import setPublished from "../middlewares/setPublished.js";
 const postRouter = Router();
 
 postRouter.get("/", postController.getPosts);
-postRouter.get("/:postId", postController.getPostById);
-
 postRouter.get("/published", setPublished, postController.getPosts);
+
+postRouter.get("/:postId", postController.getPostById);
 postRouter.get("/published/:postId", setPublished, postController.getPostById);
 
 postRouter.post("/", postController.createPost);
