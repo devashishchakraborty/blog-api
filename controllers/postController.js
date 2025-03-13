@@ -6,11 +6,10 @@ const prisma = new PrismaClient();
 const getPosts = asyncHandler(async (req, res) => {
   let condition = {};
   if (req.user.role != "ADMIN") condition.author_id = req.user.id;
+  if (req.published) condition.published = true; // For frontend site to display only published ones.
   const posts = await prisma.post.findMany({
     where: condition,
-    include: {
-      author: true
-    }
+    include: { author: true },
   });
   res.send(posts);
 });
@@ -19,19 +18,15 @@ const getPostById = asyncHandler(async (req, res) => {
   const { postId } = req.params;
   let condition = {};
   if (req.user.role != "ADMIN") condition.author_id = req.user.id;
+  if (req.published) condition.published = true;
+
   const post = await prisma.post.findUnique({
-    where: {
-      id: parseInt(postId),
-      ...condition,
-    },
-    include: {
-      comments: true,
-      author: true,
-    },
+    where: { id: parseInt(postId), ...condition },
+    include: { comments: true, author: true },
   });
-  if (!post) {
-    return res.sendStatus(404);
-  }
+
+  if (!post) return res.sendStatus(404);
+
   return res.send(post);
 });
 
